@@ -1,61 +1,43 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: order-manager-postgres
-    restart: unless-stopped
-    env_file:
-      - ./backend/.env
+  db:
+    image: postgres:16
+    container_name: orders_postgres
+    restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-order_manager_db}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders_db
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - order-manager-network
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user}"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
       timeout: 5s
       retries: 5
 
-  # Backend NestJS Application
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: development
-    container_name: order-manager-backend
-    restart: unless-stopped
-    env_file:
-      - ./backend/.env
+    container_name: orders_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      PORT: ${PORT:-3000}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@postgres:5432/order_manager_db?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/orders_db?schema=public"
+      JWT_SECRET: "supersecret"
+      PORT: 3000
+      NODE_ENV: "production"
     ports:
       - "3000:3000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - order-manager-network
-    command: sh -c "npx prisma migrate deploy && npm run start:dev"
+    command: >
+      sh -c "npx prisma migrate deploy && npm run start:prod"
+    working_dir: /app
 
 volumes:
-  postgres_data:
-    driver: local
-
-networks:
-  order-manager-network:
-    driver: bridge
+  pg_data:

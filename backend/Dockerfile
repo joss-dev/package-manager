@@ -1,28 +1,5 @@
-# Etapa de desarrollo
-FROM node:20-alpine AS development
-
-WORKDIR /app
-
-# Copiar archivos de dependencias
-COPY package*.json ./
-
-# Instalar dependencias
-RUN npm ci
-
-# Copiar el resto del código
-COPY . .
-
-# Generar Prisma Client
-RUN npx prisma generate
-
-# Exponer puerto
-EXPOSE 3000
-
-# Comando por defecto para desarrollo
-CMD ["npm", "run", "start:dev"]
-
-# Etapa de build
-FROM node:20-alpine AS build
+# ---------- STAGE 1: Build ----------
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -31,32 +8,25 @@ RUN npm ci
 
 COPY . .
 
-# Generar Prisma Client
-RUN npx prisma generate
-
-# Compilar la aplicación
 RUN npm run build
 
-# Etapa de producción
-FROM node:20-alpine AS production
+# ---------- STAGE 2: Run ----------
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copiar archivos de dependencias
+# Solo instalamos dependencias necesarias para producción
 COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Instalar solo dependencias de producción
-RUN npm ci --only=production
+# Copiamos prisma + build
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/dist ./dist
 
-# Copiar build de la etapa anterior
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+ENV NODE_ENV=production
+ENV PORT=3000
 
-# Copiar schema de Prisma para migraciones
-COPY prisma ./prisma
-
-# Exponer puerto
 EXPOSE 3000
 
-# Comando por defecto para producción
-CMD ["npm", "run", "start:prod"]
+# Ejecutar migraciones y arrancar app
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
