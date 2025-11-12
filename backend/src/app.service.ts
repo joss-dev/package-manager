@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hellodd dewdwedeweeWorld!';
+  constructor(private readonly prismaService: PrismaService) {}
+  async getHello(): Promise<string> {
+    const count = await this.prismaService.product.count();
+    return `Hello World! There are ${count} products in the database.`;
   }
 }
+// test
