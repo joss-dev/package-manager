@@ -6,10 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/interceptors/all-exceptions.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  app.use(cookieParser());
 
   const mode = configService.get<string>('MODE') || 'development';
   const port = configService.get<number>('PORT') || 3000;
