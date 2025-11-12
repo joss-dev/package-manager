@@ -9,4 +9,3 @@ export class AppService {
     return `Hello World! There are ${count} products in the database.`;
   }
 }
-// test
