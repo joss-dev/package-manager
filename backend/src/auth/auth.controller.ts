@@ -8,6 +8,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiCookieAuth,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -17,12 +24,21 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { UserResponseDto } from 'src/user/dto/user-response.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Registro de nuevo usuario' })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuario registrado exitosamente',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({ status: 409, description: 'Email ya registrado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -39,6 +55,13 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login de usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login exitoso',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -56,6 +79,15 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Obtener usuario autenticado actual' })
+  @ApiResponse({
+    status: 200,
+    description: 'Datos del usuario',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'No autenticado' })
   async getCurrentUser(
     @GetUser('userId') userId: number,
   ): Promise<UserResponseDto> {
@@ -64,6 +96,8 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Cerrar sesión' })
+  @ApiResponse({ status: 200, description: 'Sesión cerrada exitosamente' })
   logout(@Res({ passthrough: true }) res: Response): { message: string } {
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');

@@ -36,10 +36,25 @@ async function bootstrap() {
 
   if (mode === 'development') {
     const config = new DocumentBuilder()
-      .setTitle('Product API')
-      .setDescription('API profesional con configuración por entorno')
+      .setTitle('Order Manager API')
+      .setDescription('Sistema de gestión de pedidos con autenticación JWT')
       .setVersion('1.0')
-      .addTag('Products')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+        },
+        'JWT-auth',
+      )
+      .addCookieAuth('access_token')
+      .addTag('Auth', 'Autenticación de usuarios')
+      .addTag('Products', 'Gestión de productos')
+      .addTag('Customers', 'Gestión de clientes')
+      .addTag('Orders', 'Gestión de pedidos')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
@@ -53,4 +68,4 @@ async function bootstrap() {
     console.log(`📘 Swagger: http://localhost:${port}/docs`);
 }
 
-bootstrap();
+void bootstrap();
