@@ -1,34 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  HttpCode,
+  HttpStatus,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { GetOrdersDto } from './dto/get-orders.dto';
+import { OrderResponseDto } from './dto/order-response.dto';
+import { PaginatedResponse } from 'src/common/types/paginated-response';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
-@Controller('order')
+@Controller('orders')
+@UseGuards(JwtAuthGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
+  @HttpCode(HttpStatus.CREATED)
+  async create(
+    @Body() createOrderDto: CreateOrderDto,
+  ): Promise<OrderResponseDto> {
     return this.orderService.create(createOrderDto);
   }
 
   @Get()
-  findAll() {
-    return this.orderService.findAll();
+  @HttpCode(HttpStatus.OK)
+  async findAll(
+    @Query() query: GetOrdersDto,
+  ): Promise<PaginatedResponse<OrderResponseDto>> {
+    return this.orderService.findAll(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
+  @HttpCode(HttpStatus.OK)
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<OrderResponseDto> {
+    return this.orderService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+  @Post(':id/confirm')
+  @HttpCode(HttpStatus.OK)
+  async confirm(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<OrderResponseDto> {
+    return this.orderService.confirm(id);
   }
 }
