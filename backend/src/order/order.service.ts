@@ -7,6 +7,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginatedResponse } from 'src/common/types/paginated-response';
+import { OrderStatus } from 'src/common/enums/order-status.enum';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { GetOrdersDto } from './dto/get-orders.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
@@ -69,7 +70,7 @@ export class OrderService {
         data: {
           customerId: dto.customerId,
           total,
-          status: 'PENDING',
+          status: OrderStatus.PENDING,
           orderItems: {
             create: orderItemsData,
           },
@@ -233,9 +234,9 @@ export class OrderService {
         throw new NotFoundException(`Pedido con ID ${id} no encontrado`);
       }
 
-      if (order.status !== 'PENDING') {
+      if (order.status !== (OrderStatus.PENDING as string)) {
         throw new BadRequestException(
-          `Solo se pueden confirmar pedidos en estado PENDING. Estado actual: ${order.status}`,
+          `Solo se pueden confirmar pedidos en estado ${OrderStatus.PENDING}. Estado actual: ${order.status}`,
         );
       }
 
@@ -270,7 +271,7 @@ export class OrderService {
 
       const confirmedOrder = await tx.order.update({
         where: { id },
-        data: { status: 'CONFIRMED' },
+        data: { status: OrderStatus.CONFIRMED },
         include: {
           customer: true,
           orderItems: {

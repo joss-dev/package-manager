@@ -1,6 +1,7 @@
 import { PrismaClient } from '../generated/prisma';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
+import { OrderStatus } from '../src/common/enums/order-status.enum';
 
 const prisma = new PrismaClient();
 
@@ -56,7 +57,10 @@ async function main() {
       const order = await prisma.order.create({
         data: {
           customerId: customer.id,
-          status: faker.helpers.arrayElement(['PENDING', 'CONFIRMED']),
+          status: faker.helpers.arrayElement([
+            OrderStatus.PENDING,
+            OrderStatus.CONFIRMED,
+          ]),
           total: 0,
         },
       });

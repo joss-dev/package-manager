@@ -1,10 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { OrderStatus } from 'src/common/enums/order-status.enum';
 
 export class GetOrdersDto {
   @IsOptional()
-  @IsIn(['PENDING', 'CONFIRMED'])
-  status?: 'PENDING' | 'CONFIRMED';
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
 
   @IsOptional()
   @Type(() => Number)
