@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -11,6 +12,7 @@ import { LoginDto, LoginResponseDto } from './dto/login.dto';
 import { UserService } from '../user/user.service';
 import { plainToInstance } from 'class-transformer';
 import { User } from '@prisma/client';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -54,6 +56,19 @@ export class AuthService {
     const refreshToken = this.jwtService.sign(payload);
 
     return plainToInstance(LoginResponseDto, { accessToken, refreshToken });
+  }
+
+  async getCurrentUser(userId: number): Promise<UserResponseDto> {
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+    };
   }
 
   private async hashPassword(password: string): Promise<string> {

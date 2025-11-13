@@ -2,15 +2,20 @@ import {
   Body,
   Controller,
   Post,
+  Get,
   HttpCode,
   HttpStatus,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto, LoginResponseDto } from './dto/login.dto';
 import { setAuthCookies } from 'src/common/utils/cookie.util';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { UserResponseDto } from 'src/user/dto/user-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -46,6 +51,15 @@ export class AuthController {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
     return data;
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getCurrentUser(
+    @GetUser('userId') userId: number,
+  ): Promise<UserResponseDto> {
+    return this.authService.getCurrentUser(userId);
   }
 
   @Post('logout')

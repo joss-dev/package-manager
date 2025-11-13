@@ -13,6 +13,12 @@ export class UserService {
     });
   }
 
+  async findById(id: number): Promise<User | null> {
+    return await this.prismaService.user.findUnique({
+      where: { id },
+    });
+  }
+
   async create(data: Prisma.UserCreateInput): Promise<User> {
     return await this.prismaService.user.create({
       data,
