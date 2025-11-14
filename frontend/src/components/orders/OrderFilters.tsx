@@ -28,7 +28,6 @@ export const OrderFilters = ({ onFilterChange }: OrderFiltersProps) => {
       status: status || undefined,
       customerId: customerId || undefined,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, customerId]);
 
   const handleSearch = () => {
