@@ -10,6 +10,8 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
   const [search, setSearch] = useState(filters.search || '');
   const [minPrice, setMinPrice] = useState(filters.minPrice?.toString() || '');
   const [maxPrice, setMaxPrice] = useState(filters.maxPrice?.toString() || '');
+  const [sortBy, setSortBy] = useState(filters.sortBy || 'id');
+  const [order, setOrder] = useState(filters.order || 'asc');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -18,13 +20,15 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
         search: search || undefined,
         minPrice: minPrice ? parseFloat(minPrice) : undefined,
         maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+        sortBy,
+        order,
         offset: 0,
       });
     }, 500);
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, minPrice, maxPrice]);
+  }, [search, minPrice, maxPrice, sortBy, order]);
 
   const handleSearch = () => {
     onFiltersChange({
@@ -32,6 +36,8 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
       search: search || undefined,
       minPrice: minPrice ? parseFloat(minPrice) : undefined,
       maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+      sortBy,
+      order,
       offset: 0,
     });
   };
@@ -40,6 +46,8 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
     setSearch('');
     setMinPrice('');
     setMaxPrice('');
+    setSortBy('id');
+    setOrder('asc');
     onFiltersChange({
       limit: filters.limit,
       offset: 0,
@@ -57,7 +65,7 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
         <h3 className="text-lg font-semibold text-gray-900">Filtros</h3>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Buscar producto
@@ -108,6 +116,35 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
               className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Ordenar por
+          </label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'id' | 'name' | 'price' | 'stock' | 'sku')}
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="id">ID</option>
+            <option value="name">Nombre</option>
+            <option value="price">Precio</option>
+            <option value="stock">Stock</option>
+            <option value="sku">SKU</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Orden
+          </label>
+          <select
+            value={order}
+            onChange={(e) => setOrder(e.target.value as 'asc' | 'desc')}
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
         </div>
       </div>
       
