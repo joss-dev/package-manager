@@ -429,3 +429,16 @@ npx prisma migrate reset
 - **Frontend**: React 19, Vite 7, TypeScript, Tailwind CSS 3, React Router 7, Zod
 - **Testing**: Jest, ts-jest
 - **DevOps**: Docker, Docker Compose
+
+## 🤖 Uso de Inteligencia Artificial
+
+Para este proyecto utilice **GitHub Copilot (Claude Sonnet 4.5)** como herramienta de asistencia durante el desarrollo.
+
+### Partes generadas/mejoradas con IA:
+- **Análisis inicial del proyecto**: Estructura y arquitectura de la aplicación
+- **Documentación (README.md)**: Generación de documentación completa con instrucciones de instalación, configuración y uso
+- Configuración de Docker y docker-compose
+
+### Desarrollo manual:
+- Toda la lógica de negocio y funcionalidades core
+- Implementación de tests unitarios e integración
