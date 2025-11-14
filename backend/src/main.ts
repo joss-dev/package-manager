@@ -20,8 +20,12 @@ async function bootstrap() {
 
   app.use(helmet());
   app.enableCors({
-    origin: frontendUrl,
+    origin: mode === 'development' 
+      ? ['http://localhost:5173', 'http://localhost:3000', frontendUrl]
+      : frontendUrl,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.useGlobalPipes(

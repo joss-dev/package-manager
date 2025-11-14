@@ -2,13 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl
-
 COPY package*.json ./
 RUN npm install
 
 COPY . .
 
-EXPOSE 8082
+EXPOSE 5173
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
