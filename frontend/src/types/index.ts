@@ -1,4 +1,3 @@
-// Auth types
 export interface User {
   id: number;
   email: string;
@@ -20,7 +19,6 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
-// Product types
 export interface Product {
   id: number;
   name: string;
@@ -53,7 +51,6 @@ export interface GetProductsQuery {
   sortBy?: 'id' | 'name' | 'price' | 'stock' | 'sku';
 }
 
-// Customer types
 export interface Customer {
   id: number;
   name: string;
@@ -76,7 +73,6 @@ export interface GetCustomersQuery {
   offset?: number;
 }
 
-// Order types
 export type OrderStatus = 'PENDING' | 'CONFIRMED';
 
 export const ORDER_STATUS = {
@@ -127,7 +123,6 @@ export interface GetOrdersQuery {
   offset?: number;
 }
 
-// Pagination
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;
@@ -135,7 +130,6 @@ export interface PaginatedResponse<T> {
   offset: number;
 }
 
-// API Error
 export interface ApiError {
   message: string;
   statusCode: number;
