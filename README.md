@@ -17,7 +17,7 @@ Sistema completo de gestión de pedidos con autenticación, ABM de productos, cl
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Comandos Útiles](#-docker---comandos-útiles)
 - [Troubleshooting](#-troubleshooting)
-- [Deployment](#-deployment)
+- [Uso de Inteligencia Artificial](#uso-de-inteligencia-artificial)
 
 ## 🛠️ Stack Tecnológico
 
@@ -430,7 +430,7 @@ npx prisma migrate reset
 - **Testing**: Jest, ts-jest
 - **DevOps**: Docker, Docker Compose
 
-## 🤖 Uso de Inteligencia Artificial
+## Uso de Inteligencia Artificial
 
 Para este proyecto utilice **GitHub Copilot (Claude Sonnet 4.5)** como herramienta de asistencia durante el desarrollo.
 
