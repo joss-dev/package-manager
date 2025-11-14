@@ -54,10 +54,17 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
     }
 
     const existingItemIndex = items.findIndex((item) => item.productId === selectedProductId);
+    const currentQtyInCart = existingItemIndex >= 0 ? items[existingItemIndex].qty : 0;
+    const totalQty = currentQtyInCart + quantity;
+
+    if (totalQty > product.stock) {
+      setApiError(`Stock insuficiente. Disponible: ${product.stock}, En carrito: ${currentQtyInCart}`);
+      return;
+    }
     
     if (existingItemIndex >= 0) {
       const newItems = [...items];
-      newItems[existingItemIndex].qty += quantity;
+      newItems[existingItemIndex].qty = totalQty;
       setItems(newItems);
     } else {
       setItems([
@@ -73,6 +80,7 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
 
     setSelectedProductId('');
     setQuantity(1);
+    setApiError('');
   };
 
   const handleRemoveItem = (productId: number) => {
@@ -84,11 +92,19 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
       handleRemoveItem(productId);
       return;
     }
+
+    const product = products.find((p) => p.id === productId);
+    if (product && newQty > product.stock) {
+      setApiError(`Stock insuficiente para ${product.name}. Disponible: ${product.stock}`);
+      return;
+    }
+
     setItems(
       items.map((item) =>
         item.productId === productId ? { ...item, qty: newQty } : item
       )
     );
+    setApiError('');
   };
 
   const calculateTotal = () => {
@@ -108,6 +124,15 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
     if (items.length === 0) {
       setErrors({ items: 'Debe agregar al menos un producto' });
       return;
+    }
+
+    // Validar stock antes de enviar
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.productId);
+      if (product && item.qty > product.stock) {
+        setApiError(`Stock insuficiente para ${product.name}. Disponible: ${product.stock}, Solicitado: ${item.qty}`);
+        return;
+      }
     }
 
     try {
@@ -197,7 +222,7 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
               >
                 <option value="">Seleccione un producto</option>
                 {products.map((product) => (
-                  <option key={product.id} value={product.id}>
+                  <option key={product.id} value={product.id} disabled={product.stock === 0}>
                     {product.name} - ${product.price.toFixed(2)} (Stock: {product.stock})
                   </option>
                 ))}
@@ -210,6 +235,7 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
               <input
                 type="number"
                 min="1"
+                max={selectedProductId ? products.find((p) => p.id === selectedProductId)?.stock : undefined}
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"

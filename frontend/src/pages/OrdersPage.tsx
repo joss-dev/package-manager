@@ -5,6 +5,7 @@ import { OrderList } from '../components/orders/OrderList';
 import { OrderFilters } from '../components/orders/OrderFilters';
 import { OrderForm } from '../components/orders/OrderForm';
 import { OrderDetail } from '../components/orders/OrderDetail';
+import { ErrorModal } from '../components/common/ErrorModal';
 
 export const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -14,6 +15,8 @@ export const OrdersPage = () => {
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>();
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [filters, setFilters] = useState<GetOrdersQuery>({
     limit: 10,
     offset: 0,
@@ -74,8 +77,10 @@ export const OrdersPage = () => {
     try {
       await orderService.confirm(id);
       await loadOrders();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error al confirmar pedido');
+    } catch (err: unknown) {
+      const errorMessage = (err as { message?: string })?.message || 'Error al confirmar pedido';
+      setErrorMessage(errorMessage);
+      setShowErrorModal(true);
     }
   };
 
@@ -151,6 +156,13 @@ export const OrdersPage = () => {
           )}
         </>
       )}
+
+      <ErrorModal
+        isOpen={showErrorModal}
+        title="Error al confirmar pedido"
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
     </div>
   );
 };

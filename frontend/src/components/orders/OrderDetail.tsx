@@ -2,6 +2,7 @@ import type { Order } from '../../types';
 import { orderService } from '../../services';
 import { useState } from 'react';
 import { ConfirmModal } from '../common/ConfirmModal';
+import { ErrorModal } from '../common/ErrorModal';
 
 interface OrderDetailProps {
   order: Order;
@@ -13,6 +14,7 @@ export const OrderDetail = ({ order, onClose, onOrderUpdated }: OrderDetailProps
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleConfirm = async () => {
     try {
@@ -21,9 +23,11 @@ export const OrderDetail = ({ order, onClose, onOrderUpdated }: OrderDetailProps
       await orderService.confirm(order.id);
       setShowConfirmModal(false);
       onOrderUpdated();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al confirmar pedido');
+    } catch (err: unknown) {
+      const errorMessage = (err as { message?: string })?.message || 'Error al confirmar pedido';
+      setError(errorMessage);
       setShowConfirmModal(false);
+      setShowErrorModal(true);
     } finally {
       setIsConfirming(false);
     }
@@ -169,6 +173,13 @@ export const OrderDetail = ({ order, onClose, onOrderUpdated }: OrderDetailProps
         onConfirm={handleConfirm}
         onCancel={() => setShowConfirmModal(false)}
         isLoading={isConfirming}
+      />
+
+      <ErrorModal
+        isOpen={showErrorModal}
+        title="Error al confirmar pedido"
+        message={error}
+        onClose={() => setShowErrorModal(false)}
       />
     </div>
   );
