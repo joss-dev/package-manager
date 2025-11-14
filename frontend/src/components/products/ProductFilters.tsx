@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { GetProductsQuery } from '../../types';
 
 interface ProductFiltersProps {
@@ -10,6 +10,21 @@ export const ProductFilters = ({ filters, onFiltersChange }: ProductFiltersProps
   const [search, setSearch] = useState(filters.search || '');
   const [minPrice, setMinPrice] = useState(filters.minPrice?.toString() || '');
   const [maxPrice, setMaxPrice] = useState(filters.maxPrice?.toString() || '');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onFiltersChange({
+        ...filters,
+        search: search || undefined,
+        minPrice: minPrice ? parseFloat(minPrice) : undefined,
+        maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+        offset: 0,
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, minPrice, maxPrice]);
 
   const handleSearch = () => {
     onFiltersChange({

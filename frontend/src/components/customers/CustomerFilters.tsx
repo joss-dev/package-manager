@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { GetCustomersQuery } from '../../types';
 
 interface CustomerFiltersProps {
@@ -7,6 +7,15 @@ interface CustomerFiltersProps {
 
 export const CustomerFilters = ({ onFilterChange }: CustomerFiltersProps) => {
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onFilterChange({ search: search || undefined });
+    }, 500);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const handleSearch = () => {
     onFilterChange({ search: search || undefined });
