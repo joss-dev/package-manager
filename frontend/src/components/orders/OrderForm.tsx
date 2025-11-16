@@ -44,6 +44,11 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
   }, []);
 
   const handleAddItem = () => {
+    if (!customerId) {
+      setApiError('Debe seleccionar un cliente antes de agregar productos');
+      return;
+    }
+
     if (!selectedProductId || quantity <= 0) {
       return;
     }
@@ -189,11 +194,12 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
                 setErrors((prev) => ({ ...prev, customerId: '' }));
               }
             }}
+            disabled={items.length > 0}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
               errors.customerId
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-indigo-500'
-            }`}
+            } ${items.length > 0 ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           >
             <option value="">Seleccione un cliente</option>
             {customers.map((customer) => (
@@ -204,6 +210,11 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
           </select>
           {errors.customerId && (
             <p className="mt-1 text-sm text-red-600">{errors.customerId}</p>
+          )}
+          {items.length > 0 && (
+            <p className="mt-1 text-xs text-gray-500">
+              No se puede cambiar el cliente después de agregar productos
+            </p>
           )}
         </div>
 
