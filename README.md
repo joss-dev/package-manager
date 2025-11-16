@@ -5,6 +5,12 @@ Sistema completo de gestión de pedidos con autenticación, ABM de productos, cl
 [![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 
+## 🎥 Video Presentación
+
+[![Ver Video de Presentación](https://img.shields.io/badge/▶️_Ver_Video_de_Presentación-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1qiKmTB1KIvahiAO9RpJxmEQBHtTtFTba/view?usp=sharing)
+
+Mira la demostración completa del proyecto
+
 ## 📑 Tabla de Contenidos
 
 - [Stack Tecnológico](#-stack-tecnológico)
