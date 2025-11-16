@@ -65,7 +65,8 @@ export const CustomerForm = ({ customer, onSuccess, onCancel }: CustomerFormProp
         });
         setErrors(fieldErrors);
       } else {
-        setApiError(error instanceof Error ? error.message : 'Error al guardar el cliente');
+        const apiError = error as { message?: string };
+        setApiError(apiError.message || 'Error al guardar el cliente');
       }
     } finally {
       setIsLoading(false);
