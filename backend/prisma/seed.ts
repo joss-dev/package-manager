@@ -24,7 +24,7 @@ async function main() {
   });
   console.log(`✅ Created ${users.count} users`);
 
-  const productsData = Array.from({ length: 10 }).map(() => ({
+  const productsData = Array.from({ length: 150 }).map(() => ({
     name: faker.commerce.productName(),
     sku: faker.string.alphanumeric(8).toUpperCase(),
     price: parseFloat(faker.commerce.price({ min: 100, max: 2000, dec: 2 })),
