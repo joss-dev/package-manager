@@ -404,6 +404,50 @@ npx prisma migrate reset
 - Unit tests (totales y stock)
 - Integration tests (creación y confirmación)
 
+## 🧪 Testing
+
+### Ejecutar tests localmente
+
+```bash
+cd backend
+
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests en modo watch
+npm run test:watch
+
+# Ejecutar tests con coverage
+npm run test:cov
+
+# Ejecutar tests e2e
+npm run test:e2e
+```
+
+### Ejecutar tests en Docker
+
+Si estás usando Docker, puedes ejecutar los tests dentro del contenedor:
+
+```bash
+# Ejecutar todos los tests
+docker-compose exec backend npm test
+
+# Ejecutar tests en modo watch
+docker-compose exec backend npm run test:watch
+
+# Ejecutar tests con coverage
+docker-compose exec backend npm run test:cov
+
+# Ejecutar tests e2e
+docker-compose exec backend npm run test:e2e
+```
+
+### Tests Disponibles
+
+- **Unit Tests**: Validación de cálculos de totales y manejo de stock
+- **Integration Tests**: Flujo completo de creación y confirmación de pedidos
+- **E2E Tests**: Tests end-to-end de la aplicación
+
 ## 🐛 Troubleshooting
 
 ### Error: "Cannot connect to the database"
