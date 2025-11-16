@@ -17,7 +17,7 @@ Sistema completo de gestión de pedidos con autenticación, ABM de productos, cl
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Comandos Útiles](#-docker---comandos-útiles)
 - [Troubleshooting](#-troubleshooting)
-- [Uso de Inteligencia Artificial](#uso-de-inteligencia-artificial)
+- [Uso de Inteligencia Artificial](#-uso-de-inteligencia-artificial)
 
 ## 🛠️ Stack Tecnológico
 
@@ -460,15 +460,49 @@ docker-compose exec backend npm run test:e2e
 - **Testing**: Jest, ts-jest
 - **DevOps**: Docker, Docker Compose
 
-## Uso de Inteligencia Artificial
+## 🤖 Uso de Inteligencia Artificial
 
-Para este proyecto utilice **GitHub Copilot (Claude Sonnet 4.5)** como herramienta de asistencia durante el desarrollo.
+Para este proyecto utilicé **GitHub Copilot (Claude Sonnet 4.5)** como herramienta de asistencia durante el desarrollo.
 
-### Partes generadas/mejoradas con IA:
-- **Análisis inicial del proyecto**: Estructura y arquitectura de la aplicación
-- **Documentación (README.md)**: Generación de documentación completa con instrucciones de instalación, configuración y uso
-- Configuración de Docker y docker-compose
+### 🔧 Herramienta utilizada
+**GitHub Copilot** con modelo Claude Sonnet 4.5 - Asistente de código integrado en VS Code
 
-### Desarrollo manual:
-- Toda la lógica de negocio y funcionalidades core
-- Implementación de tests unitarios e integración
+### ✨ Partes generadas/mejoradas con IA
+
+#### Configuración y Documentación
+- **README.md completo**: Documentación con instrucciones de instalación, configuración, endpoints API, troubleshooting
+- **Configuración Docker**: Archivos `docker-compose.yml`, `Dockerfile` para backend y frontend
+- **Variables de entorno**: Archivos `.env.example` con documentación de cada variable
+
+#### Componentes Frontend
+- **ConfirmModal**: Modal de confirmación reutilizable con loading state
+
+#### Testing
+- **Tests de integración**: Flujo completo de creación y confirmación de pedidos
+- **Configuración de Jest**: Setup para tests unitarios y e2e
+
+### 🛠️ Ajustes y desarrollo manual
+
+- **Lógica de negocio completa**: Toda la implementación de servicios, controladores y casos de uso
+- **Esquema Prisma**: Diseño de base de datos y relaciones entre entidades
+- **Tests unitarios**: Validación de cálculos de totales y manejo de stock
+- **Autenticación JWT**: Implementación de guards, estrategias y cookies httpOnly
+- **Validaciones de negocio**: Control de stock, validación de productos únicos en pedidos
+
+### 📝 Ejemplos de prompts utilizados
+
+#### Para componentes de UI
+```
+"Crea un modal de confirmación reutilizable en React con TypeScript que incluya:
+- Props: isOpen, title, message, onConfirm, onCancel, isLoading
+- Botones de Cancelar (gris) y Confirmar (verde)
+- Estado de loading que deshabilite los botones y muestre 'Confirmando...'
+- Estilos con Tailwind CSS"
+```
+
+#### Para documentación
+```
+"Genera una sección completa de Testing para el README que incluya:
+- Comandos para ejecutar tests localmente (npm test, test:watch, test:cov, test:e2e)
+- Comandos para ejecutar tests dentro de Docker (docker-compose exec backend npm test)"
+```
