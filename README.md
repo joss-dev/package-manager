@@ -8,6 +8,7 @@ Sistema completo de gestión de pedidos con autenticación, ABM de productos, cl
 ## 📑 Tabla de Contenidos
 
 - [Stack Tecnológico](#-stack-tecnológico)
+- [Base de Datos](#-base-de-datos)
 - [Requisitos Previos](#-requisitos-previos)
 - [Inicio Rápido con Docker](#-inicio-rápido-con-docker-recomendado)
 - [Ejecución Local (Sin Docker)](#-local-sin-docker)
@@ -36,6 +37,28 @@ Sistema completo de gestión de pedidos con autenticación, ABM de productos, cl
 - **Tailwind CSS** - Framework CSS
 - **React Router** - Enrutamiento
 - **Zod** - Validación de esquemas
+
+## 🗄️ Base de Datos
+
+La estructura completa de la base de datos está disponible en el archivo **`/bd/migration.sql`** en la raíz del proyecto.
+
+Este archivo contiene:
+- **Schema SQL completo**: Definición de todas las tablas (users, products, customers, orders, order_items)
+- **Constraints de integridad**: 
+  - `CHECK` para validaciones (precio >= 0, stock >= 0, cantidad > 0)
+  - `UNIQUE` para campos únicos (email, SKU)
+  - `PRIMARY KEY` y `FOREIGN KEY` para relaciones entre tablas
+- **Índices**: Para optimizar consultas
+- **Validaciones a nivel DB**: Status de pedidos solo puede ser 'PENDING' o 'CONFIRMED'
+
+> **Nota**: Este archivo es generado automáticamente por Prisma Migrate y representa la estructura exacta de la base de datos. No es necesario ejecutarlo manualmente ya que las migraciones se aplican automáticamente con Docker o mediante `npx prisma migrate deploy`.
+
+### Tablas principales:
+- **users**: Gestión de usuarios con autenticación
+- **products**: Catálogo de productos con SKU único, precio y stock
+- **customers**: Información de clientes
+- **orders**: Pedidos asociados a un cliente
+- **order_items**: Ítems de cada pedido con cantidad y precio al momento de la compra
 
 ## 📋 Requisitos Previos
 
