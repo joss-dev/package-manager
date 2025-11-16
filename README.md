@@ -180,20 +180,6 @@ cp .env.example .env
 npm run dev
 ```
 
-## 🧪 Testing
-
-### Backend - Unit Tests
-```bash
-cd backend
-npm run test:unit
-```
-
-### Backend - Integration Tests
-```bash
-cd backend
-npm run test:integration
-```
-
 ## 📚 Documentación API
 
 Una vez iniciado el backend, la documentación interactiva de Swagger está disponible en:
