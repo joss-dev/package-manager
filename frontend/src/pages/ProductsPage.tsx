@@ -4,6 +4,7 @@ import type { Product, GetProductsQuery, ApiError } from '../types';
 import { ProductList } from '../components/products/ProductList';
 import { ProductForm } from '../components/products/ProductForm';
 import { ProductFilters } from '../components/products/ProductFilters';
+import { ConfirmModal } from '../components/common/ConfirmModal';
 
 export const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -18,6 +19,9 @@ export const ProductsPage = () => {
     order: 'asc',
     sortBy: 'id',
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -48,16 +52,36 @@ export const ProductsPage = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+  const handleDelete = (id: number) => {
+    setProductToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (productToDelete === null) return;
     
+    setDeleting(true);
     try {
-      await productService.delete(id);
-      loadProducts();
+      await productService.delete(productToDelete);
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+      await loadProducts();
     } catch (err) {
       const apiError = err as ApiError;
-      alert(apiError.message || 'Error al eliminar producto');
+      const errorMessage = apiError.statusCode === 500 
+        ? 'No se puede eliminar el producto porque tiene órdenes asociadas'
+        : (apiError.message || 'Error al eliminar producto');
+      setError(errorMessage);
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
   };
 
   const handleFormSuccess = () => {
@@ -129,6 +153,15 @@ export const ProductsPage = () => {
             />
           </div>
         )}
+
+        <ConfirmModal
+          isOpen={showDeleteModal}
+          title="Eliminar Producto"
+          message="¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer."
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+          isLoading={deleting}
+        />
       </div>
     </div>
   );

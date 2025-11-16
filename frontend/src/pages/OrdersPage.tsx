@@ -62,8 +62,6 @@ export const OrdersPage = () => {
       setLoadingDetail(true);
       setError('');
       const fullOrder = await orderService.getById(order.id);
-      console.log('Loaded order detail:', fullOrder);
-      console.log('OrderItems:', fullOrder.orderItems);
       setSelectedOrder(fullOrder);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar detalle del pedido');
