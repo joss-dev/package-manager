@@ -26,6 +26,11 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
+  
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
+  const [showProductDropdown, setShowProductDropdown] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -182,32 +187,61 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
+        <div className="relative">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Cliente *
           </label>
-          <select
-            value={customerId}
+          <input
+            type="text"
+            value={customerSearch}
             onChange={(e) => {
-              setCustomerId(e.target.value ? Number(e.target.value) : '');
-              if (errors.customerId) {
-                setErrors((prev) => ({ ...prev, customerId: '' }));
-              }
+              setCustomerSearch(e.target.value);
+              setShowCustomerDropdown(true);
             }}
+            onFocus={() => setShowCustomerDropdown(true)}
+            onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 200)}
             disabled={items.length > 0}
+            placeholder="Buscar cliente por nombre o email..."
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
               errors.customerId
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-indigo-500'
             } ${items.length > 0 ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-          >
-            <option value="">Seleccione un cliente</option>
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.name} ({customer.email})
-              </option>
-            ))}
-          </select>
+          />
+          {showCustomerDropdown && items.length === 0 && (
+            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+              {customers
+                .filter((c) =>
+                  c.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
+                  c.email.toLowerCase().includes(customerSearch.toLowerCase())
+                )
+                .map((customer) => (
+                  <div
+                    key={customer.id}
+                    onClick={() => {
+                      setCustomerId(customer.id);
+                      setCustomerSearch(`${customer.name} (${customer.email})`);
+                      setShowCustomerDropdown(false);
+                      if (errors.customerId) {
+                        setErrors((prev) => ({ ...prev, customerId: '' }));
+                      }
+                    }}
+                    className="px-3 py-2 hover:bg-indigo-50 cursor-pointer border-b last:border-b-0"
+                  >
+                    <div className="font-medium text-gray-900">{customer.name}</div>
+                    <div className="text-sm text-gray-500">{customer.email}</div>
+                  </div>
+                ))}
+              {customers.filter((c) =>
+                c.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
+                c.email.toLowerCase().includes(customerSearch.toLowerCase())
+              ).length === 0 && (
+                <div className="px-3 py-2 text-gray-500 text-sm">
+                  No se encontraron clientes
+                </div>
+              )}
+            </div>
+          )}
           {errors.customerId && (
             <p className="mt-1 text-sm text-red-600">{errors.customerId}</p>
           )}
@@ -222,22 +256,70 @@ export const OrderForm = ({ onSuccess, onCancel }: OrderFormProps) => {
           <h3 className="text-lg font-semibold mb-4">Productos</h3>
           
           <div className="flex gap-4 mb-4">
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Producto
               </label>
-              <select
-                value={selectedProductId}
-                onChange={(e) => setSelectedProductId(e.target.value ? Number(e.target.value) : '')}
+              <input
+                type="text"
+                value={productSearch}
+                onChange={(e) => {
+                  setProductSearch(e.target.value);
+                  setShowProductDropdown(true);
+                  setSelectedProductId('');
+                }}
+                onFocus={() => setShowProductDropdown(true)}
+                onBlur={() => setTimeout(() => setShowProductDropdown(false), 200)}
+                placeholder="Buscar producto por nombre o SKU..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Seleccione un producto</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id} disabled={product.stock === 0}>
-                    {product.name} - ${product.price.toFixed(2)} (Stock: {product.stock})
-                  </option>
-                ))}
-              </select>
+              />
+              {showProductDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                  {products
+                    .filter((p) =>
+                      p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+                      p.sku.toLowerCase().includes(productSearch.toLowerCase())
+                    )
+                    .map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={() => {
+                          if (product.stock > 0) {
+                            setSelectedProductId(product.id);
+                            setProductSearch(`${product.name} - $${product.price.toFixed(2)}`);
+                            setShowProductDropdown(false);
+                          }
+                        }}
+                        className={`px-3 py-2 border-b last:border-b-0 ${
+                          product.stock === 0
+                            ? 'bg-gray-100 cursor-not-allowed opacity-50'
+                            : 'hover:bg-indigo-50 cursor-pointer'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-medium text-gray-900">{product.name}</div>
+                            <div className="text-xs text-gray-500">SKU: {product.sku}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold text-indigo-600">${product.price.toFixed(2)}</div>
+                            <div className={`text-xs ${product.stock === 0 ? 'text-red-600' : 'text-gray-500'}`}>
+                              Stock: {product.stock}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  {products.filter((p) =>
+                    p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+                    p.sku.toLowerCase().includes(productSearch.toLowerCase())
+                  ).length === 0 && (
+                    <div className="px-3 py-2 text-gray-500 text-sm">
+                      No se encontraron productos
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="w-32">
               <label className="block text-sm font-medium text-gray-700 mb-1">
